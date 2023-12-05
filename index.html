@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Information</title>
+    <!-- Include Firebase JavaScript SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.4.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.4.0/firebase-database.js"></script>
+</head>
+<body>
+    <h1>Sensor Information</h1>
+    <div id="sensorData"></div>
+
+    <script>
+        // Initialize Firebase with your config
+        const firebaseConfig = {
+            apiKey: "AIzaSyA86e48F_UtOuLIkNwppLgiDwUymICsFJg",
+            authDomain: "temperature-humidity-sen-c51c7.firebaseapp.com",
+            databaseURL: "https://temperature-humidity-sen-c51c7-default-rtdb.asia-southeast1.firebasedatabase.app/",
+            projectId: "temperature-humidity-sen-c51c7",
+            storageBucket: "temperature-humidity-sen-c51c7.appspot.com",
+            messagingSenderId: "",
+            appId: ""
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        // Reference to your Firebase Realtime Database path
+        const dbRef = firebase.database().ref("Sensor");
+
+        // Listen for changes in the database
+        dbRef.on("value", (snapshot) => {
+            const sensorData = snapshot.val();
+            updateSensorData(sensorData);
+        });
+
+        // Function to update sensor data in the HTML
+        function updateSensorData(data) {
+            const sensorDataElement = document.getElementById("sensorData");
+            sensorDataElement.innerHTML = "";
+
+            if (data) {
+                Object.keys(data).forEach(date => {
+                    const dateData = data[date];
+                    Object.keys(dateData).forEach(time => {
+                        const timeData = dateData[time];
+                        const temperature = timeData.temperature;
+                        const humidity = timeData.humidity;
+
+                        const sensorInfo = document.createElement("p");
+                        sensorInfo.textContent = `Date and Time: ${date} ${time}, Temperature: ${temperature}°C, Humidity: ${humidity}%`;
+                        sensorDataElement.appendChild(sensorInfo);
+                    });
+                });
+            } else {
+                const noDataMessage = document.createElement("p");
+                noDataMessage.textContent = "No sensor data available.";
+                sensorDataElement.appendChild(noDataMessage);
+            }
+        }
+    </script>
+</body>
+</html>
